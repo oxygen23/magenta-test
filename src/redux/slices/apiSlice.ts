@@ -65,23 +65,27 @@ const apiSlice = createSlice({
         state.results = filteredResults;
         state.filteredData = filteredResults;
       } else {
-        state.results = state.sortedData.length > 0 ? state.sortedData : state.originalData;
+        if (state.sortedData.length > 0) {
+          state.results = state.sortedData;
+        } else if (payload.length === 0) {
+          state.results = state.originalData;
+        } else {
+          state.results = state.filteredData;
+        }
+
         state.filteredData = [];
-        console.log('else');
       }
     },
     sort(state, { payload }: { payload: PayloadUnion }) {
+      const initialResults = state.filteredData.length !== 0
+        ? state.filteredData
+        : state.originalData;
+
       if (payload === '') {
-        state.results = state.filteredData.length !== 0
-          ? state.filteredData
-          : state.originalData;
+        state.results = initialResults;
 
         state.sortedData = [];
       } else {
-        const initialResults = state.filteredData.length !== 0
-          ? state.filteredData
-          : state.originalData;
-
         const sortedResults = initialResults.slice().sort((a: People, b: People) => {
           const valueA = parseFloat(a[payload]);
           const valueB = parseFloat(b[payload]);
@@ -91,9 +95,13 @@ const apiSlice = createSlice({
           }
           return valueB - valueA;
         });
-        state.results = state.filteredData.length !== 0 || state.filteredData.length === 0
-          ? sortedResults
-          : state.filteredData;
+
+        if (state.filteredData.length >= 0) {
+          state.results = sortedResults;
+        } else {
+          state.results = state.filteredData;
+        }
+
         state.sortedData = sortedResults;
       }
     },

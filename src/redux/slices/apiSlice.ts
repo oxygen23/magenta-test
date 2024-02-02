@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import { FetchingData, PayloadUnion } from '../../types/FetchingData';
@@ -38,7 +38,9 @@ const apiSlice = createSlice({
   reducers: {
     filter(state, { payload }: { payload: string[] }) {
       if (payload.length > 0) {
-        state.results = state.results.filter((item: People) => {
+        const initialResults = state.sortedData.length > 0 ? state.sortedData : state.originalData;
+
+        const filteredResults = initialResults.filter((item: People) => {
           if (payload.includes('male') && item.gender !== 'male') {
             return false;
           }
@@ -59,15 +61,28 @@ const apiSlice = createSlice({
           }
           return true;
         });
+
+        state.results = filteredResults;
+        state.filteredData = filteredResults;
       } else {
-        state.results = state.originalData;
+        state.results = state.sortedData.length > 0 ? state.sortedData : state.originalData;
+        state.filteredData = [];
+        console.log('else');
       }
     },
     sort(state, { payload }: { payload: PayloadUnion }) {
       if (payload === '') {
-        state.results = state.originalData;
+        state.results = state.filteredData.length !== 0
+          ? state.filteredData
+          : state.originalData;
+
+        state.sortedData = [];
       } else {
-        state.results = state.results.slice().sort((a: People, b: People) => {
+        const initialResults = state.filteredData.length !== 0
+          ? state.filteredData
+          : state.originalData;
+
+        const sortedResults = initialResults.slice().sort((a: People, b: People) => {
           const valueA = parseFloat(a[payload]);
           const valueB = parseFloat(b[payload]);
 
@@ -76,6 +91,10 @@ const apiSlice = createSlice({
           }
           return valueB - valueA;
         });
+        state.results = state.filteredData.length !== 0 || state.filteredData.length === 0
+          ? sortedResults
+          : state.filteredData;
+        state.sortedData = sortedResults;
       }
     },
   },

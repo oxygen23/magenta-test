@@ -1,5 +1,5 @@
 import {
-  ChangeEvent, FC, useEffect, useState,
+  ChangeEvent, FC, memo, useEffect, useState,
 } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -61,4 +61,4 @@ const Header: FC = () => {
   );
 };
 
-export default Header;
+export default memo(Header);

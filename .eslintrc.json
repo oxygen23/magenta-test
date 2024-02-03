@@ -55,7 +55,7 @@
       }
     ],
     "import/no-cycle": "off",
-    "no-console": "off",
+    "no-console": "warn",
     //react
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",

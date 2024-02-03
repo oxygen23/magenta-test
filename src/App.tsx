@@ -11,6 +11,7 @@ import { useAppDispatch } from './redux/store';
 const App = () => {
   const dispatch = useAppDispatch();
   const { pageUrl } = useSelector(selectData);
+
   useEffect(() => {
     const fetchData = () => new Promise((resolve, reject) => {
       dispatch(fetchDataApi())
@@ -20,13 +21,14 @@ const App = () => {
 
     fetchData();
   }, [dispatch, pageUrl]);
+
   return (
     <>
       <Header />
       <Routes>
         <Route element={<Welcome />} path="/welcome" />
         <Route element={<Welcome />} path="/" />
-        <Route element={<Table />} path="/table" />
+        <Route element={<Table />} path="/table/*" />
       </Routes>
     </>
   );

@@ -20,8 +20,7 @@ const initialState: FetchingData = {
 
 export const fetchDataApi = createAsyncThunk('api/getData', async (_, thunkAPI) => {
   const state = thunkAPI.getState();
-  console.log(state);
-  const { pageUrl }: { pageUrl: string } = (state as { apiSlice: FetchingData }).apiSlice;
+  const { pageUrl } = (state as { apiSlice: FetchingData }).apiSlice;
   const response: FetchingData = await axios.get(pageUrl);
   return response.data;
 });
@@ -54,7 +53,7 @@ const apiSlice = createSlice({
     changePage(state, { payload }: { payload: string }) {
       if (payload === 'next' && state.data.next !== null) {
         state.pageUrl = state.data.next;
-      } else if (payload === 'previous' && state.data.previous !== null) {
+      } else if (payload === 'previous' && state.data.previous) {
         state.pageUrl = state.data.previous;
       } else {
         state.pageUrl = state.baseUrl;

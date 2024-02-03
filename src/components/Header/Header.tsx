@@ -1,9 +1,10 @@
 import {
   ChangeEvent, FC, memo, useEffect, useState,
 } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { NavLink, useLocation } from 'react-router-dom';
 
-import { filter, sort } from '../../redux/slices/apiSlice';
+import { filter, selectData, sort } from '../../redux/slices/apiSlice';
 import { useAppDispatch } from '../../redux/store';
 import { PayloadUnion } from '../../types/FetchingData';
 import Filter from '../Filter/Filter';
@@ -14,6 +15,11 @@ const Header: FC = () => {
   const dispatch = useAppDispatch();
   const [filters, setFilters] = useState<string[]>([]);
   const [sortedBy, setSortedBy] = useState<PayloadUnion>('');
+
+  const { pageUrl, status } = useSelector(selectData);
+
+  const location = useLocation();
+  const { pathname } = location;
 
   const sortFunction = (event: ChangeEvent<HTMLSelectElement>) => {
     setSortedBy((event.target.value as PayloadUnion));
@@ -28,12 +34,16 @@ const Header: FC = () => {
   };
 
   useEffect(() => {
-    dispatch(sort(sortedBy));
-  }, [dispatch, sortedBy]);
+    if (status === 'success') {
+      dispatch(sort(sortedBy));
+    }
+  }, [dispatch, sortedBy, pageUrl, status]);
 
   useEffect(() => {
-    dispatch(filter(filters));
-  }, [filters, dispatch]);
+    if (status === 'success') {
+      dispatch(filter(filters));
+    }
+  }, [filters, dispatch, pageUrl, status]);
 
   return (
     <header className={styles.header}>
@@ -42,7 +52,7 @@ const Header: FC = () => {
           className={({ isActive }) => (isActive
             ? `${styles.navigate__item} ${styles.active}`
             : styles.navigate__item)}
-          to="/welcome"
+          to={pathname === '/' ? '/' : '/welcome'}
         >
           Home
         </NavLink>
@@ -54,8 +64,12 @@ const Header: FC = () => {
         >
           Table
         </NavLink>
-        <Select sortFunction={sortFunction} />
-        <Filter filteredByMoreArg={filteredByMoreArg} />
+        {pathname.startsWith('/table/') && (
+        <>
+          <Select sortFunction={sortFunction} />
+          <Filter filteredByMoreArg={filteredByMoreArg} filters={filters} />
+        </>
+        )}
       </nav>
     </header>
   );

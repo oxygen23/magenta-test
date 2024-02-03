@@ -1,41 +1,65 @@
-import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import { FetchingData, PayloadUnion } from '../../types/FetchingData';
 import { People } from '../../types/People';
 
 const initialState: FetchingData = {
+  baseUrl: 'https://swapi.dev/api/people',
+  data: {
+    next: '',
+    previous: '',
+    results: [],
+  },
   filteredData: [],
   originalData: [],
-  results: [],
+  pageUrl: 'https://swapi.dev/api/people/?page=1',
   sortedData: [],
   status: 'pending',
 };
 
-export const fetchDataApi = createAsyncThunk('api/getData', async () => {
-  const response: FetchingData & { data: { results: [] } } = await axios.get('https://swapi.dev/api/people');
+export const fetchDataApi = createAsyncThunk('api/getData', async (_, thunkAPI) => {
+  const state = thunkAPI.getState();
+  console.log(state);
+  const { pageUrl }: { pageUrl: string } = (state as { apiSlice: FetchingData }).apiSlice;
+  const response: FetchingData = await axios.get(pageUrl);
   return response.data;
 });
 
 const apiSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchDataApi.fulfilled, (state, { payload }) => {
-      state.results = payload.results;
+      state.data.results = payload.results;
+      state.data.previous = payload.previous;
+      state.data.next = payload.next;
       state.originalData = payload.results;
       state.status = 'success';
     });
     builder.addCase(fetchDataApi.pending, (state) => {
-      state.results = initialState.results;
+      state.data.results = initialState.data.results;
+      state.data.previous = initialState.data.previous;
+      state.data.next = initialState.data.next;
       state.status = initialState.status;
     });
     builder.addCase(fetchDataApi.rejected, (state) => {
-      state.results = initialState.results;
-      state.status = initialState.status;
+      state.data.results = initialState.data.results;
+      state.data.previous = initialState.data.previous;
+      state.data.next = initialState.data.next;
+      state.status = 'error';
     });
   },
   initialState,
   name: 'ApiSlice',
   reducers: {
+    changePage(state, { payload }: { payload: string }) {
+      if (payload === 'next' && state.data.next !== null) {
+        state.pageUrl = state.data.next;
+      } else if (payload === 'previous' && state.data.previous !== null) {
+        state.pageUrl = state.data.previous;
+      } else {
+        state.pageUrl = state.baseUrl;
+      }
+    },
     filter(state, { payload }: { payload: string[] }) {
       if (payload.length > 0) {
         const initialResults = state.sortedData.length > 0 ? state.sortedData : state.originalData;
@@ -62,15 +86,15 @@ const apiSlice = createSlice({
           return true;
         });
 
-        state.results = filteredResults;
+        state.data.results = filteredResults;
         state.filteredData = filteredResults;
       } else {
         if (state.sortedData.length > 0) {
-          state.results = state.sortedData;
+          state.data.results = state.sortedData;
         } else if (payload.length === 0) {
-          state.results = state.originalData;
+          state.data.results = state.originalData;
         } else {
-          state.results = state.filteredData;
+          state.data.results = state.filteredData;
         }
 
         state.filteredData = [];
@@ -82,7 +106,7 @@ const apiSlice = createSlice({
         : state.originalData;
 
       if (payload === '') {
-        state.results = initialResults;
+        state.data.results = initialResults;
 
         state.sortedData = [];
       } else {
@@ -97,9 +121,9 @@ const apiSlice = createSlice({
         });
 
         if (state.filteredData.length >= 0) {
-          state.results = sortedResults;
+          state.data.results = sortedResults;
         } else {
-          state.results = state.filteredData;
+          state.data.results = state.filteredData;
         }
 
         state.sortedData = sortedResults;
@@ -108,7 +132,7 @@ const apiSlice = createSlice({
   },
 });
 
-export const { filter, sort } = apiSlice.actions;
+export const { changePage, filter, sort } = apiSlice.actions;
 
 export const selectData = (state: { apiSlice: FetchingData }) => state.apiSlice;
 

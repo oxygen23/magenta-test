@@ -1,8 +1,14 @@
 export interface FetchingData {
+  baseUrl: string
+  data: {
+    next: ''
+    previous: ''
+    results: People[];
+  }
   filteredData: People[],
   originalData: People[];
-  results: People[];
-  sortedData: People[]
+  pageUrl: string;
+  sortedData: People[];
   status: 'error' | 'pending' | 'success';
 }
 

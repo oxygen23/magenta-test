@@ -1,6 +1,32 @@
 .table
   border-collapse: collapse
+  display: flex
+  flex-direction: column
+  align-items: center
+  margin-bottom: 40px
+  & ~ p
+    display: flex
+    justify-content: center
+    margin-bottom: 15px
+    font-size: 20px
   &__title
     width: fit-content
     white-space: nowrap
     padding: 10px
+  &__buttons
+    display: flex
+    justify-content: center
+    align-items: center
+    &_item
+      background: grey
+      font-size: 30px
+      width: 30px
+      height: 30px
+      display: flex
+      align-items: center
+      justify-content: center
+      border-radius: 30px
+      color: white
+    &_page
+      font-size: 30px
+      margin: 0 15px

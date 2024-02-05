@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-import { FetchingData, PayloadUnion } from '../../types/FetchingData';
+import { FetchingData, SortedUnion } from '../../types/FetchingData';
 import { People } from '../../types/People';
 
 const initialState: FetchingData = {
@@ -99,7 +99,7 @@ const apiSlice = createSlice({
         state.filteredData = [];
       }
     },
-    sort(state, { payload }: { payload: PayloadUnion }) {
+    sort(state, { payload }: { payload: SortedUnion }) {
       const initialResults = state.filteredData.length !== 0
         ? state.filteredData
         : state.originalData;

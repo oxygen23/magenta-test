@@ -6,7 +6,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 import { filter, selectData, sort } from '../../redux/slices/apiSlice';
 import { useAppDispatch } from '../../redux/store';
-import { PayloadUnion } from '../../types/FetchingData';
+import { SortedUnion } from '../../types/FetchingData';
 import Filter from '../Filter/Filter';
 import Select from '../Select/Select';
 import styles from './Header.module.sass';
@@ -14,7 +14,7 @@ import styles from './Header.module.sass';
 const Header: FC = () => {
   const dispatch = useAppDispatch();
   const [filters, setFilters] = useState<string[]>([]);
-  const [sortedBy, setSortedBy] = useState<PayloadUnion>('');
+  const [sortedBy, setSortedBy] = useState<SortedUnion>('');
 
   const { pageUrl, status } = useSelector(selectData);
 
@@ -22,7 +22,7 @@ const Header: FC = () => {
   const { pathname } = location;
 
   const sortFunction = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSortedBy((event.target.value as PayloadUnion));
+    setSortedBy((event.target.value as SortedUnion));
   };
 
   const filteredByMoreArg = (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +45,15 @@ const Header: FC = () => {
     }
   }, [filters, dispatch, pageUrl, status]);
 
+  useEffect(() => {
+    if (status === 'pending') {
+      setFilters([]);
+      setSortedBy('');
+      dispatch(sort(sortedBy));
+      dispatch(filter(filters));
+    }
+    // eslint-disable-next-line
+  }, [dispatch, status]);
   return (
     <header className={styles.header}>
       <nav className={styles.navigate}>
@@ -66,7 +75,7 @@ const Header: FC = () => {
         </NavLink>
         {pathname.startsWith('/table/') && (
         <>
-          <Select sortFunction={sortFunction} />
+          <Select currentSort={sortedBy} sortFunction={sortFunction} />
           <Filter filteredByMoreArg={filteredByMoreArg} filters={filters} />
         </>
         )}

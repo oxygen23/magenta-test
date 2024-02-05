@@ -12,4 +12,4 @@ export interface FetchingData {
   status: 'error' | 'pending' | 'success';
 }
 
-export type PayloadUnion = '' | 'birth_year' | 'created' | 'edited' | 'eye_color' | 'gender' | 'hair_color' | 'height' | 'mass' | 'name' | 'skin_color';
+export type SortedUnion = '' | 'birth_year' | 'created' | 'edited' | 'eye_color' | 'gender' | 'hair_color' | 'height' | 'mass' | 'name' | 'skin_color';

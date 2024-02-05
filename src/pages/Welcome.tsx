@@ -54,7 +54,6 @@ const Welcome: FC = () => (
         <code className={styles.list__item_mono}>src/components/Header/Header.tsx</code>
         .
       </li>
-      <li className={styles.list__item}>Сортировка и фильтрация работают даже если перейти на следующую страницу.</li>
       <li className={styles.list__item}>
         Стили для страниц и компонентов писал&nbsp;
         <code className={styles.list__item_mono}>модульными</code>
@@ -64,11 +63,12 @@ const Welcome: FC = () => (
         На данном приложении был настроен&nbsp;
         <code className={styles.list__item_mono}>Eslint</code>
         {' '}
-        и правила для него
+        и правила для него.
       </li>
       <li className={styles.list__item}>
         Сборка приложения производится через&nbsp;
         <code className={styles.list__item_mono}>Vite</code>
+        .
       </li>
     </ol>
   </div>

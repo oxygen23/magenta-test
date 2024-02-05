@@ -1,14 +1,17 @@
 import { ChangeEvent, FC } from 'react';
 
+import { SortedUnion } from '../../types/FetchingData';
+
 interface SelectProps {
+  currentSort: SortedUnion
   sortFunction: (event: ChangeEvent<HTMLSelectElement>) => void
 }
 
-const Select: FC<SelectProps> = ({ sortFunction }) => (
+const Select: FC<SelectProps> = ({ currentSort, sortFunction }) => (
   <>
     <p>Сортировать по</p>
-    <select id="" name="" onChange={sortFunction}>
-      <option value="" />
+    <select id="" name="" onChange={sortFunction} value={currentSort}>
+      <option value="">Сбросить сортировку</option>
       <option value="name">имени</option>
       <option value="height">росту</option>
       <option value="mass">весу</option>

@@ -27,7 +27,7 @@ const Table: FC = () => {
   };
 
   useEffect(() => {
-    navigate(`/table/page=${pageUrl.slice(-1)}`, { replace: true });
+    navigate(`/table/?page=${pageUrl.slice(-1)}`, { replace: true });
   }, [pageUrl, navigate]);
 
   return (
